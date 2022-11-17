@@ -139,3 +139,50 @@ console.log(parse(noneJsonString)(JSON));
 //   left: ...
 // }
 ```
+
+
+## 例外
+
+### ユースケース
+
+APIが非決定論的な値を返すとき
+
+### 例
+
+`Math.random`
+
+### 解決策
+- `IO` を返すような関数を実装する。
+
+```ts
+import { IO } from 'fp-ts/IO'
+
+const random: IO<number> = () => Math.random()
+
+console.log(random()) // 0.7946022437006872
+```
+
+
+## 同期的な副作用
+
+
+### ユースケース
+
+APIがグローバルステートを読み込んだり書き込んだり、その両方をするとき
+
+### 例
+
+`localStorage.getItem`
+
+### 解決策
+- `IO` を返すような関数を実装する。
+- `IO` が返す値は `Option` になるようにする。
+
+```ts
+import { Option, fromNullable } from 'fp-ts/Option'
+import { IO } from 'fp-ts/IO'
+
+function getItem(key: string): IO<Option<string>> {
+  return () => fromNullable(localStorage.getItem(key))
+}
+```
